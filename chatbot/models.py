@@ -19,17 +19,17 @@ class User(Base):
     username = Column(String(50), unique=True, index=True)
     email = Column(String(50), unique=True, index=True)
 
-    iocs = relationship("IoC", back_populates="user")
+    # iocs = relationship("IoC", back_populates="user")
 
-class IoC(Base):
-    __tablename__ = "iocs"
+# class IoC(Base):
+#     __tablename__ = "iocs"
 
-    id = Column(Integer, primary_key=True, index=True)
-    type = Column(String(50))  # 예: IP, URL, File Hash 등
-    value = Column(String(255))  # 실제 IoC 값
-    description = Column(String(500))
-    confidence = Column(Float)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    user_id = Column(Integer, ForeignKey("users.id"))
+#     id = Column(Integer, primary_key=True, index=True)
+#     type = Column(String(50))  # 예: IP, URL, File Hash 등
+#     value = Column(String(255))  # 실제 IoC 값
+#     description = Column(String(500))
+#     confidence = Column(Float)
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("User", back_populates="iocs")
+#     user = relationship("User", back_populates="iocs")

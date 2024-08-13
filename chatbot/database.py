@@ -3,26 +3,26 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
-from config import config
 from dotenv import load_dotenv
+# from config import config
 
 # DB_PASSWORD = config['dbpassword']
 
 # Database connection string
-# DB_CONN = f'mysql+pymysql://root:{DB_PASSWORD}@localhost:3306/chat_bot'
-# DB_HOST = os.environ.get('DB_HOST', 'mariadb')
-# DB_USER = os.environ.get('DB_USER', 'root')
-# DB_PASSWORD = os.environ.get('DB_PASSWORD', '1234')
-# DB_NAME = os.environ.get('DB_NAME', 'dbname')
+DB_HOST = os.environ.get('DB_HOST', 'mariadb')
+DB_USER = os.environ.get('DB_USER', 'root')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '1234')
+DB_NAME = os.environ.get('DB_NAME', 'dbname')
+DB_CONN = f'mysql+pymysql://root:{DB_PASSWORD}@localhost:3306/chat_bot'
 
-load_dotenv()
+# load_dotenv()
 
-DB_HOST = os.getenv('DB_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME')
+# DB_HOST = os.getenv('DB_HOST')
+# DB_USER = os.getenv('DB_USER')
+# DB_PASSWORD = os.getenv('DB_PASSWORD')
+# DB_NAME = os.getenv('DB_NAME')
 
-DB_CONN = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+# DB_CONN = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 class SQLAlchemy():
 

@@ -10,31 +10,15 @@ class AccessData(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class IoCBase(BaseModel):
-    type: str
-    value: str
-    description: Optional[str] = None
-    confidence: Optional[float] = None
-    created_at: Optional[datetime] = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-class IoCSchema(IoCBase):
-    id: int
-    user_id: int
-
-    model_config = ConfigDict(from_attributes=True)
-
-class UserSchema(BaseModel):
+class UserData(BaseModel):
     username: str
     email: str
 
     model_config = ConfigDict(from_attributes=True)
-        
-# user를 get할 때 사용
-class UserResponse(UserSchema):
-    id: int
-    iocs: List[IoCSchema] = []
+
+class IoCData(BaseModel):
+    ioc_item: Optional[str] = None
+    ioc_type: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -44,8 +28,36 @@ class AccessResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class UserCreate(UserSchema):
-    pass
+# class IoCBase(BaseModel):
+#     type: str
+#     value: str
+#     description: Optional[str] = None
+#     confidence: Optional[float] = None
+#     created_at: Optional[datetime] = None
 
-class IoCCreate(IoCBase):
-    pass
+#     model_config = ConfigDict(from_attributes=True)
+
+# class IoCSchema(IoCBase):
+#     id: int
+#     user_id: int
+
+#     model_config = ConfigDict(from_attributes=True)
+
+# class UserSchema(BaseModel):
+#     username: str
+#     email: str
+
+#     model_config = ConfigDict(from_attributes=True)
+        
+# # user를 get할 때 사용
+# class UserResponse(UserSchema):
+#     id: int
+#     iocs: List[IoCSchema] = []
+
+#     model_config = ConfigDict(from_attributes=True)
+
+# class UserCreate(UserSchema):
+#     pass
+
+# class IoCCreate(IoCBase):
+#     pass
