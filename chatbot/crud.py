@@ -3,10 +3,10 @@ from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 from vt import virustotal
 import models
-# from models import User, IoC
 import schema
+# from enum import Enum
 # from schema import UserSchema, IoCData
-from enum import Enum
+# from models import User, IoC
 
 def get_user(db: Session, user_identifier):
     if isinstance(user_identifier, int):
