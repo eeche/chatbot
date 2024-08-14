@@ -41,6 +41,9 @@ def process_bob_command(message_text):
     args = parts[2] if len(parts) > 2 else ""
     return command, args
 
+def format_bob_data(data):
+    return f"name: {data['name']}, age: {data['age']}, track: {data['track']}, etc: {data['etc']}"
+
 def process_ioc(message_text):
     # Simple parsing of IOC from message
     parts = message_text.split()
@@ -124,9 +127,14 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                 
                 if command == 'help':
                     help_message = (
-                        "BoB 데이터 등록 방법:\n"
-                        "!bob post 이름 / 나이 / 트랙 / 기타사항\n"
-                        "예시: !bob post 홍길동 / 25 / 보안컨설팅 / 열심히 하겠습니다"
+                        "BoB 명령어 사용법:\n"
+                        "1. 데이터 등록: !bob post 이름 / 나이 / 트랙 / 기타사항\n"
+                        "   예시: !bob post 홍길동 / 25 / 보안컨설팅 / 열심히 하겠습니다\n"
+                        "2. 데이터 조회:\n"
+                        "   - !bob search name: [이름]\n"
+                        "   - !bob search age: [나이]\n"
+                        "   - !bob search track: [트랙]\n"
+                        "   예시: !bob search name: 홍길동"
                     )
                     client.web_client.chat_postMessage(channel=channel, text=help_message)
                 
@@ -163,11 +171,46 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                                 channel=channel,
                                 text="나이는 숫자여야 합니다."
                             )
+                elif command == 'search':
+                    if ':' not in args:
+                        client.web_client.chat_postMessage(
+                            channel=channel,
+                            text="올바른 형식이 아닙니다. '!bob help'를 참조하세요."
+                        )
+                    else:
+                        field, value = [item.strip() for item in args.split(':', 1)]
+                        if field not in ['name', 'age', 'track']:
+                            client.web_client.chat_postMessage(
+                                channel=channel,
+                                text="올바른 필드가 아닙니다. 'name', 'age', 'track' 중 하나를 사용하세요."
+                            )
+                        else:
+                            search_data = {field: value}
+                            response = requests.post(url + "bob/search", json=search_data)
+                            if response.status_code == 200:
+                                data = response.json()
+                                if data:
+                                    result = "\n".join([format_bob_data(item) for item in data])
+                                    client.web_client.chat_postMessage(
+                                        channel=channel,
+                                        text=f"조회 결과:\n{result}"
+                                    )
+                                else:
+                                    client.web_client.chat_postMessage(
+                                        channel=channel,
+                                        text="해당하는 데이터가 없습니다."
+                                    )
+                            else:
+                                client.web_client.chat_postMessage(
+                                    channel=channel,
+                                    text=f"데이터 조회 중 오류가 발생했습니다: {response.text}"
+                                )
                 else:
                     client.web_client.chat_postMessage(
                         channel=channel,
                         text="알 수 없는 명령어입니다. '!bob help'를 참조하세요."
                     )
+
         except Exception as e:
             logging.error(f"Error processing message: {e}")
 

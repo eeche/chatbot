@@ -50,6 +50,16 @@ def write_bob_data(bob_data: schema.BoBData, db: Session):
     }
     return result
 
+def get_bob_data(bob_data: schema.BoBData, db: Session):
+    query = db.query(models.BoB)
+    if bob_data.name:
+        query = query.filter(models.BoB.name == bob_data.name)
+    if bob_data.age:
+        query = query.filter(models.BoB.age == bob_data.age)
+    if bob_data.track:
+        query = query.filter(models.BoB.track == bob_data.track)
+    return query.all()
+
 # class IoCType(Enum):
 #     EMAIL_MISMATCH = "Email Mismatch"
 #     # PASSWORD_ATTEMPT = "Password Attempt"
