@@ -12,6 +12,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from dotenv import load_dotenv
 from vt import virustotal
+from abuseipdb import check_abuseipdb
 
 load_dotenv()
 
@@ -91,13 +92,17 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                 ioc_type, ioc_value = process_ioc(message_text)
                 if ioc_type and ioc_value:
                     vt_result = virustotal(ioc_value, ioc_type)
+                    abuse_result = check_abuseipdb(ioc_value, ioc_type)
                     
                     # Format the result for Slack
-                    formatted_result = f"VirusTotal Analysis for {ioc_type} '{ioc_value}':\n```\n{vt_result}\n```"
+                    # formatted_result = f"VirusTotal Analysis for {ioc_type} '{ioc_value}':\n```\n{vt_result}\n```"
+                    result = f"Results for {ioc_type}: {ioc_value}\n\n"
+                    result += f"VirusTotal Results:\n{vt_result}\n\n"
+                    result += f"AbuseIPDB Results:\n{abuse_result}\n\n"
                     
                     client.web_client.chat_postMessage(
                         channel=channel,
-                        text=formatted_result
+                        text=f"```\n{result}\n```"
                     )
                 else:
                     client.web_client.chat_postMessage(
