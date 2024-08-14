@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "RUN API"
-python3 src/chatbot/main.py
+python3 chatbot/main.py

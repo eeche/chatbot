@@ -40,7 +40,7 @@ services:
       - .env
 
   api:
-    image: eeche/bob13:4.2
+    image: eeche/bob13:5
     ports:
       - 80:8080
     env_file:
@@ -49,7 +49,7 @@ services:
       PYTHONUNBUFFERED: "1"
     depends_on:
       - mariadb
-    command: sh -c "sleep 5 && /app/start.sh"
+    command: sh -c "sleep 10 && /app/start.sh"
 
 volumes:
   bobip-mariadb-data:
