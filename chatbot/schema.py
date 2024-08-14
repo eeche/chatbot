@@ -28,6 +28,7 @@ class AccessResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 # class IoCBase(BaseModel):
 #     type: str
 #     value: str

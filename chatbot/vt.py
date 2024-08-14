@@ -31,4 +31,4 @@ def virustotal(query_item, query_type):
         return result
     
 # result = virustotal('1.1.1.1', 'ip')
-# print()
+# print(result)

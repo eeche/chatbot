@@ -23,21 +23,26 @@ async def ioc(ioc: schema.IoCData):
     """IoC_Data API""" 
     return  crud.ioc_check(ioc)
 
-@app.post("/access", response_model=schema.AccessResponse)
-async def access(user_input: schema.UserData, db: Session = Depends(db.get_session)):
+@app.post("/access")
+async def access(access_data: schema.AccessData, db: Session = Depends(db.get_session)):
+    return crud.write_access_data(access_data, db)
 
-    user = crud.get_user(db, user_input)
-    if not user:
-        raise HTTPException(status_code=404, detail="Sorry, user not found")
+
+# @app.post("/access", response_model=schema.AccessResponse)
+# async def access(user_input: schema.UserData, db: Session = Depends(db.get_session)):
+
+#     user = crud.get_user(db, user_input)
+#     if not user:
+#         raise HTTPException(status_code=404, detail="Sorry, user not found")
     
-    if user.email != user_input.email:
-        # crud.create_ioc(db, user, user_input, crud.IoCType.EMAIL_MISMATCH)
-        raise HTTPException(status_code=401, detail="Email does not match")
+#     if user.email != user_input.email:
+#         # crud.create_ioc(db, user, user_input, crud.IoCType.EMAIL_MISMATCH)
+#         raise HTTPException(status_code=401, detail="Email does not match")
     
-    return schema.AccessResponse(
-        message=f"Welcome!! {user.username}",
-        user_id=user.id
-    )
+#     return schema.AccessResponse(
+#         message=f"Welcome!! {user.username}",
+#         user_id=user.id
+#     )
 
 # @app.get("/hi")
 # async def hi():

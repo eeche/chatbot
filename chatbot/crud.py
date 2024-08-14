@@ -1,9 +1,9 @@
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 from vt import virustotal
 import models
 import schema
+# from zoneinfo import ZoneInfo
 # from enum import Enum
 # from schema import UserSchema, IoCData
 # from models import User, IoC
@@ -21,6 +21,20 @@ def ioc_check(ioc: schema.IoCData):
         result = virustotal(ioc.ioc_item, ioc.ioc_type)
         return result
     return {"message": "Invalid IoC type"}
+
+def write_access_data(access_data: schema.AccessData, db: Session):
+    access_entry = models.Access_Table(
+        user_id = access_data.user_id,
+        channel_id = access_data.channel_id,
+        access_time = access_data.access_time,
+        access_id = access_data.access_id
+    )
+    db.add(access_entry)
+    db.commit()
+    result = {
+        "Access Granted": True,
+    }
+    return result
 
 # class IoCType(Enum):
 #     EMAIL_MISMATCH = "Email Mismatch"

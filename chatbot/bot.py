@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import ssl
 import logging
@@ -10,6 +11,7 @@ from slack_sdk.socket_mode.request import SocketModeRequest
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from dotenv import load_dotenv
+from vt import virustotal
 
 load_dotenv()
 
@@ -20,6 +22,7 @@ ssl_context.verify_mode = ssl.CERT_NONE
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 SOCKET_TOKEN = os.getenv('SOCKET_TOKEN')
 BOTNAME = 'BoB'
+url = 'http://localhost:8080/'
 
 ALLOW_USERS = ['U07HAULKYJU', '']
 
@@ -27,6 +30,15 @@ SLACK_CLIENT = SocketModeClient(
     app_token=SOCKET_TOKEN,
     web_client=WebClient(token=BOT_TOKEN, ssl=ssl_context)
 )
+
+def process_ioc(message_text):
+    # Simple parsing of IOC from message
+    parts = message_text.split()
+    if len(parts) >= 3:
+        ioc_type = parts[1].lower()
+        ioc_value = parts[2]
+        return ioc_type, ioc_value
+    return None, None
 
 def process(client: SocketModeClient, req: SocketModeRequest):
     if req.type == "events_api" and req.payload["event"]["type"] == "message":
@@ -51,6 +63,18 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                 channel=channel,
                 text=f"Received: {message_text}"
             )
+
+            message_text = req.payload["event"]["text"]
+            access_time = datetime.fromtimestamp(float(req.payload["event"]["ts"]))
+            access_time_str = access_time.isoformat()
+            
+            access_data = {
+                "user_id": user_id,
+                "channel_id": channel,
+                "access_time": access_time_str,
+                "access_id": f"{user_id}_{access_time}"
+            }
+            response = requests.post(url + "access/", json=access_data)
             
             if user_id in ALLOW_USERS and message_text.lower().startswith('ioc'):
             # if user_id in ALLOW_USERS and 'ioc' in message_text.lower():
@@ -64,6 +88,22 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                     channel=channel,
                     text="IOC detected. Further analysis required."
                 )
+                ioc_type, ioc_value = process_ioc(message_text)
+                if ioc_type and ioc_value:
+                    vt_result = virustotal(ioc_value, ioc_type)
+                    
+                    # Format the result for Slack
+                    formatted_result = f"VirusTotal Analysis for {ioc_type} '{ioc_value}':\n```\n{vt_result}\n```"
+                    
+                    client.web_client.chat_postMessage(
+                        channel=channel,
+                        text=formatted_result
+                    )
+                else:
+                    client.web_client.chat_postMessage(
+                        channel=channel,
+                        text="Invalid IOC format. Please use: 'ioc [type] [value]'"
+                    )
         except Exception as e:
             logging.error(f"Error processing message: {e}")
 
