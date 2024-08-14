@@ -32,6 +32,15 @@ SLACK_CLIENT = SocketModeClient(
     web_client=WebClient(token=BOT_TOKEN, ssl=ssl_context)
 )
 
+def process_bob_command(message_text):
+    parts = message_text.split(maxsplit=2)
+    if len(parts) < 2:
+        return None, None
+    
+    command = parts[1].lower()
+    args = parts[2] if len(parts) > 2 else ""
+    return command, args
+
 def process_ioc(message_text):
     # Simple parsing of IOC from message
     parts = message_text.split()
@@ -108,6 +117,56 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                     client.web_client.chat_postMessage(
                         channel=channel,
                         text="Invalid IOC format. Please use: 'ioc [type] [value]'"
+                    )
+
+            if message_text.lower().startswith('!bob'):
+                command, args = process_bob_command(message_text)
+                
+                if command == 'help':
+                    help_message = (
+                        "BoB 데이터 등록 방법:\n"
+                        "!bob post 이름 / 나이 / 트랙 / 기타사항\n"
+                        "예시: !bob post 홍길동 / 25 / 보안컨설팅 / 열심히 하겠습니다"
+                    )
+                    client.web_client.chat_postMessage(channel=channel, text=help_message)
+                
+                elif command == 'post':
+                    data = args.split('/')
+                    if len(data) != 4:
+                        client.web_client.chat_postMessage(
+                            channel=channel,
+                            text="올바른 형식이 아닙니다. '!bob help'를 참조하세요."
+                        )
+                    else:
+                        name, age, track, etc = [item.strip() for item in data]
+                        try:
+                            age = int(age)
+                            bob_data = {
+                                "name": name,
+                                "age": age,
+                                "track": track,
+                                "etc": etc
+                            }
+                            response = requests.post(url + "bob/", json=bob_data)
+                            if response.status_code == 200:
+                                client.web_client.chat_postMessage(
+                                    channel=channel,
+                                    text="BoB 데이터가 성공적으로 등록되었습니다."
+                                )
+                            else:
+                                client.web_client.chat_postMessage(
+                                    channel=channel,
+                                    text=f"데이터 등록 중 오류가 발생했습니다: {response.text}"
+                                )
+                        except ValueError:
+                            client.web_client.chat_postMessage(
+                                channel=channel,
+                                text="나이는 숫자여야 합니다."
+                            )
+                else:
+                    client.web_client.chat_postMessage(
+                        channel=channel,
+                        text="알 수 없는 명령어입니다. '!bob help'를 참조하세요."
                     )
         except Exception as e:
             logging.error(f"Error processing message: {e}")

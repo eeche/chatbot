@@ -36,6 +36,20 @@ def write_access_data(access_data: schema.AccessData, db: Session):
     }
     return result
 
+def write_bob_data(bob_data: schema.BoBData, db: Session):
+    bob_entry = models.BoB(
+        name = bob_data.name,
+        age = bob_data.age,
+        track = bob_data.track,
+        etc = bob_data.etc
+    )
+    db.add(bob_entry)
+    db.commit()
+    result = {
+        "BoB Data Added": True,
+    }
+    return result
+
 # class IoCType(Enum):
 #     EMAIL_MISMATCH = "Email Mismatch"
 #     # PASSWORD_ATTEMPT = "Password Attempt"

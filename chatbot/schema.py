@@ -28,6 +28,13 @@ class AccessResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class BoBData(BaseModel):
+    name: str
+    age: int
+    track: str
+    etc: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 # class IoCBase(BaseModel):
 #     type: str

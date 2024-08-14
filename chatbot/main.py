@@ -2,11 +2,14 @@ import uvicorn
 from database import db
 from models import Base
 
-Base.metadata.create_all(bind=db.engine)
 LOG = "debug"
+
+def create_tables():
+    Base.metadata.create_all(bind=db.engine)
 
 if __name__ == "__main__":
     try:
+        create_tables()
         if LOG == "debug":
             uvicorn.run(
                 "api:app",

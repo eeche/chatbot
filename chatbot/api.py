@@ -27,6 +27,10 @@ async def ioc(ioc: schema.IoCData):
 async def access(access_data: schema.AccessData, db: Session = Depends(db.get_session)):
     return crud.write_access_data(access_data, db)
 
+@app.post("/bob")
+async def bob(bob_data: schema.BoBData, db: Session = Depends(db.get_session)):
+    return crud.write_bob_data(bob_data, db)
+
 
 # @app.post("/access", response_model=schema.AccessResponse)
 # async def access(user_input: schema.UserData, db: Session = Depends(db.get_session)):

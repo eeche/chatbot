@@ -18,8 +18,18 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, index=True)
     email = Column(String(50), unique=True, index=True)
-
+    
     # iocs = relationship("IoC", back_populates="user")
+
+class BoB(Base):
+    __tablename__ = "bob"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, index=True)
+    age = Column(Integer, index=True)
+    track = Column(String(50), index=True)
+    etc = Column(String(250), index=True)
+
 
 # class IoC(Base):
 #     __tablename__ = "iocs"
